@@ -1,0 +1,19 @@
+{
+  // 마크다운 파일에 대한 특정 설정
+  "[markdown]": {
+    // 저장 시 자동으로 코드 액션(린트 수정 등) 실행
+    "editor.codeActionsOnSave": {
+      "source.fixAll.markdownlint": "explicit"
+    },
+    // 저장 시 자동 포맷팅 활성화 (선택 사항)
+    "editor.formatOnSave": true,
+    // 기본 포맷터 설정 (markdownlint를 포맷터로 사용)
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+  },
+
+  // markdownlint 상세 규칙 설정 (필요 시)
+  "markdownlint.config": {
+    "MD013": false, // 한 줄 길이 제한 비활성화
+    "MD033": false  // HTML 태그 허용
+  }
+}
