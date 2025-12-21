@@ -24,35 +24,75 @@
 - 덕 타이핑이란 : 프로그래밍에서 객체의 실제 타입이 아닌 **행동(메서드와 속성)을 보고 타입을 결정**하는 동적 타이핑의 한 방식
 
 ```javascript
-let a = 10, b = '20'; console.log(a + b); // 1020
+let a = 10, b = '20'; console.log(a + b);  --> 1020 
 ```
 
-- 인터프리터 :
-- 컴파일러 :
-- 타입체커 :
+- 인터프리터 : 코드를 한 줄씩 읽어가며 즉시 실행하는 엔진(V8 등). JS는 기본적으로 인터프리터 언어이다. 대표적인 언어로 Ruby, Python, JavaScript 가 있다.
+- 컴파일러: 한 언어의 소스 코드를 다른 언어로 변환(TS → JS)하는 도구이다. 타입스크립트 컴파일러(tsc)는 고수준 언어를 고수준 언어로 바꾸기에 '트랜스파일러'라고도 불리기도 한다. (컴파일러 하면 유한 오토마타가 떠오르긴 함)
+  - 고급언어 -> 프리프로세서(전처리기) -> 고급언어
+  - 고급언어 -> 인터프리터 -> 실행결과
+  - 고급언어 -> 컴파일러 > 저급언어(=어셈플리어)
+  - 어셈플리어 -> 어셈블러 -> 기계어
+- 타입체커: 소스 코드를 정적 분석하여 런타임에 발생할 오류를 실행 전에 찾아내는 프로그램이다.
+  - 정적 타이핑에서는 컴파일 타임에서 코드 실행 전에 오류를 잡아낸다. (C, Java, Rust, TS)
+  - 동적 타이핑에서는 런타임에서 실행 중에 타입을 결정하기에 이때 오류를 잡아낸다. (Python, JS, Ruby)
 
-### Item 2. 타입스크립트 설정 이해하기ㅑ
+### Item 2. 타입스크립트 설정 이해하기
 
 - JS 에서 TS 으로 마이그레이션하는게 아니라면 아래 설정은 필수로 사용하라.
-- noImplicitAny
-- strictNullChecks :
-- strictFunctionTypes :
+- noImplicitAny: 변수나 매개변수(Parameter)에 타입 정보가 없을 때 any로 추론되는 것을 금지한다. 타입을 명시하거나 추론 가능하게 강제한다
+- strictNullChecks: null과 undefined가 모든 타입의 하위 타입이 되는 것을 방지하다. 명시적으로 체크하지 않으면 에러를 발생시켜 Runtime Error를 획기적으로 줄인다.
+- strictFunctionTypes: 함수의 매개변수 타입이 더 엄격하게 체크되도록 한다 (반변성(contravariance) 체크).
 
 ### Item 3. 코드 생성과 타입이 관계없음을 이해하기
 
 - 타입 오류가 있어도 컴파일이 가능하다. 원치 않을 경우 noEmitOnError 을 추가하라.
-- 코드 생성 :
-- 타입 시스템 :
+- 코드 생성: tsc가 수행하는 작업으로, TS 코드를 실행 가능한 JS로 변환하는 과정이다. 이 과정에서 타입 정보는 완전히 제거(Erasure)된다.
+- 타입 시스템: 정적 분석을 통해 코드의 유효성을 검사하는 논리 계층이다. 런타임에는 영향을 주지 않는다. 즉, 타입 오류가 있어도 컴파일은 가능하며, 타입 정보로 런타임 성능을 개선할 수 없다.
 
 ### Item 4. 구조적 타이핑에 익숙해지기
 
 - 자바스크립트는 기본적으로 덕 타이핑이다.
-  - 덕 타이핑 :
-- 구조적 타이핑
-  - 이로 인해 타입 체커는 문제라 보지 않는 경우가 있음
-  - 봉인된(sealed) 타입 :
-  - 정확한(precise) 타입 :
-  - 유닛 테스트가 쉽다.
+- 덕 타이핑(Duck Typing): "오리처럼 걷고 오리처럼 낸다면 그것은 오리다." 객체가 어떤 타입을 상속받았느냐가 아니라, 필요한 속성을 가지고 있느냐에 집중한다.
+- 구조적 타이핑: 타입스크립트의 핵심 원리로, 타입의 이름이 달라도 내부 구조(속성과 타입)가 같으면 동일한 타입으로 취급한다.
+- 이로 인해 타입 체커는 문제라 보지 않는 경우가 있다
+  - Java나 C#이라면 에러가 났겠지만, TypeScript는 통과시킨다.
+  - Person 타입이 필요한 곳에 Dog 타입을 넣었지만 "구조(name 속성)"가 같기 때문이다.
+
+```typescript
+interface Person {
+  name: string;
+}
+interface Dog {
+  name: string;
+}
+function sayHello(p: Person) {
+  console.log(`Hello, ${p.name}`);
+}
+const myDog: Dog = { name: "바둑이" };
+sayHello(myDog);
+```
+
+- Point 인터페이스에는 없지만 'name'과 'z'가 포함된 객체
+- 에러가 발생하지 않는다
+- logPoint는 x, y만 있으면 동작하는 데 지장이 없다고 판단하기 때문이다.
+
+```typescript
+interface Point {
+  x: number;
+  y: number;
+}
+
+function logPoint(p: Point) {
+  console.log(`x: ${p.x}, y: ${p.y}`);
+}
+const point3D = { x: 1, y: 2, z: 3, name: "3D포인트" };
+
+logPoint(point3D);
+```
+
+- 봉인된(Sealed) / 정확한(Precise) 타입: 타입스크립트의 타입은 열려(Open) 있다. 즉, 선언된 속성 외에 추가 속성이 있어도 오류로 보지 않는다. 따라서 "정확히 이 속성만 있다"고 보장하는 '봉인된' 타입을 기본적으로 지원하지 않으며, 이는 루프 문 등에서 예상치 못한 결과를 초래할 수 있다.
+- 유닛 테스트가 쉽다: 실제 복잡한 DB 객체 대신, 필요한 인터페이스 구조만 갖춘 가짜(Mock) 객체를 넘기기가 매우 수월하다.
 - 타입스크립트는 타입에 따라 사용 가능한것들이 다르다.
 - 타입 확장이 열려있다.
 - <https://toss.tech/article/typescript-type-compatibility>
@@ -61,20 +101,50 @@ let a = 10, b = '20'; console.log(a + b); // 1020
 
 - 타입스크립트의 타입 시스템은 점진적(Gradual), 선택적(Optioanl)이다.
 - 타입스크립트에서 Any 를 쓰지 말아야 하는 이유가 많고, 써야 하는 이유는 적다.
-  - Any 는 함수 컨트렉트를 무시한다.
-  - 리펙토링에 방해되고 버그를 찾는데 방해된다.
-  - 타입 설계를 감춘다.
-  - 타입시스템의 신뢰도를 떨어트린다.
+- Any는 함수 컨트랙트를 무시한다: 함수를 호출할 때 "이런 입력을 주면 이런 출력을 주겠다"는 약속을 깨뜨린다.
+- 리팩토링에 방해된다: 변수 이름을 바꾸려 할 때 any 타입은 참조 추적이 되지 않아 자동 완성이나 일괄 변경에서 누락된다
+- 타입 설계를 감춘다: 복잡한 객체 설계를 any 하나로 퉁치게 되어, 동료 개발자가 코드의 의도를 파악하기 어렵게 만든다
+- 타입시스템의 신뢰도를 떨어트린다.
 
 ---
 
 ## 💻 코드 예시
->
-> [!example] 좋은 패턴 vs 나쁜 패턴
+
 **❌ 지양해야 할 코드**
 
 ```typescript
 
-// 여기에 에러가 발생하거나 위험한 예시 코드를 적으세요.
+// 1. 과도한 any 사용 (타입 안전성 포기)
+function calculateArea(shape: any) {
+  return shape.width * shape.height; // 런타임에 shape.width가 없어도 체크 불가
+}
 
+// 2. 구조적 타이핑의 함정
+interface Vector2D { x: number; y: number; }
+function calculateLength(v: Vector2D) {
+  return Math.sqrt(v.x * v.x + v.y * v.y);
+}
+const v3D = { x: 3, y: 4, z: 10 }; 
+calculateLength(v3D); // 정상 작동 (하지만 z가 무시됨을 인지해야 함)
+
+```
+
+**✅ 지향해야 할 코드 (엄격한 설정 및 타입 활용)**
+
+```typescript
+// strictNullChecks: true 일 때
+function getLength(str: string | null) {
+  if (str === null) return 0; // 반드시 정제(Narrowing) 필요
+  return str.length;
+}
+
+// 명확한 인터페이스 정의
+interface Rectangle {
+  width: number;
+  height: number;
+}
+
+function getArea(rect: Rectangle): number {
+  return rect.width * rect.height;
+}
 ```
