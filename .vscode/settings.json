@@ -14,6 +14,7 @@
   // markdownlint 상세 규칙 설정 (필요 시)
   "markdownlint.config": {
     "MD013": false, // 한 줄 길이 제한 비활성화
-    "MD033": false  // HTML 태그 허용
+    "MD033": false,  // HTML 태그 허용
+    "MD007": { "indent": 4 } // 띄어쓰기
   }
 }
