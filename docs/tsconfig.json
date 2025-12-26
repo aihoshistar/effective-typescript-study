@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    /* 1. 기본 설정 */
+    "module": "commonjs",
+    "target": "es2017",
+    "lib": ["es2017", "dom"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "strict": true, 
+    /* strict 모드는 아래 옵션들을 모두 포함합니다:
+       - noImplicitAny
+       - strictNullChecks (null 처리 강제)
+       - strictFunctionTypes
+       - strictBindCallApply
+       - strictPropertyInitialization
+       - noImplicitThis
+       - useUnknownInCatchVariables
+    */
+
+    /* 3. 추가 엄격 모드 (여기가 핵심입니다!) */
+    "noUnusedLocals": true,        /* 선언만 하고 안 쓰는 변수 있으면 에러 (Item 19 관련) */
+    "noUnusedParameters": true,    /* 함수에서 안 쓰는 파라미터 있으면 에러 */
+    "noImplicitReturns": true,     /* 함수의 모든 경로에서 값을 반환하지 않으면 에러 */
+    "noFallthroughCasesInSwitch": true, /* switch문에서 break 빼먹으면 에러 (Item 22 관련) */
+    "noImplicitOverride": true,    /* 클래스 상속 시 override 키워드 강제 */
+    "allowUnreachableCode": false, /* 도달할 수 없는 코드(Dead Code) 있으면 에러 */
+    
+    /* 4. 고급 엄격 설정 (선택 사항: 정말 깐깐하게 하려면 추가) */
+    "exactOptionalPropertyTypes": true /* 선택적 속성에 undefined 할당 금지 */
+  },
+  "include": ["index.ts"]
+}
